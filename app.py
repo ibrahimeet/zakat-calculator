@@ -185,12 +185,8 @@ with st.sidebar:
     st.divider()
 
     st.markdown("**🔑 Live Price API Key**")
-    api_key = st.text_input(
-        "goldapi.io API Key (Free)",
-        placeholder="paste-your-free-key-here",
-        type="password",
-        help="Get a free key at goldapi.io — 100 requests/month free"
-    )
+    import os
+    api_key = st.secrets.get("GOLD_API_KEY", "")
     st.caption("💡 [Get free key at goldapi.io](https://www.goldapi.io)")
 
     st.divider()
@@ -668,4 +664,5 @@ with tab5:
 streamlit==1.32.0
 requests==2.31.0
 pandas==2.2.0
+
 plotly==5.19.0
