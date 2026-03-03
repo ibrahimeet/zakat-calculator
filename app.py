@@ -177,6 +177,44 @@ st.markdown("""
   /* Expander */
   .streamlit-expanderHeader { color: #e2e8f0 !important; }
   .streamlit-expanderContent { color: #cbd5e1 !important; background: #1e293b !important; }
+
+  /* Dropdown / Selectbox options */
+  [data-baseweb="select"] * { 
+    background-color: #1e293b !important; 
+    color: #e2e8f0 !important; 
+  }
+  [data-baseweb="menu"] { 
+    background-color: #1e293b !important; 
+    border: 1px solid #334155 !important;
+  }
+  [data-baseweb="option"] { 
+    background-color: #1e293b !important; 
+    color: #e2e8f0 !important; 
+  }
+  [data-baseweb="option"]:hover { 
+    background-color: #f0d06020 !important; 
+    color: #f0d060 !important; 
+  }
+  [data-baseweb="popover"] * { 
+    background-color: #1e293b !important; 
+    color: #e2e8f0 !important; 
+  }
+  /* Selected item in dropdown */
+  [data-baseweb="select"] [data-testid="stMarkdownContainer"] {
+    color: #e2e8f0 !important;
+  }
+  div[role="listbox"] {
+    background-color: #1e293b !important;
+  }
+  div[role="option"] {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+  div[role="option"]:hover {
+    background-color: #f0d06030 !important;
+    color: #f0d060 !important;
+  }
+  
 </style>
 """, unsafe_allow_html=True)
 
@@ -697,4 +735,5 @@ with tab5:
       Zakat calculations may vary by school of thought (madhab).
     </div>
     """, unsafe_allow_html=True)
+
 
