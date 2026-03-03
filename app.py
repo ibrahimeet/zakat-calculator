@@ -276,12 +276,19 @@ with st.sidebar:
     st.divider()
 
     st.markdown("**🔑 Live Price API Key**")
+    # Auto-read from Streamlit Secrets if available
+    secret_key = st.secrets.get("GOLD_API_KEY", "") if hasattr(st, "secrets") else ""
+    
     api_key = st.text_input(
         "goldapi.io API Key (Free)",
+        value=secret_key,          # ← auto-fills from Secrets
         placeholder="paste-your-free-key-here",
         type="password",
         help="Get a free key at goldapi.io — 100 requests/month free"
     )
+    
+    if secret_key:
+        st.caption("✅ API key loaded from Secrets")
     st.caption("💡 [Get free key at goldapi.io](https://www.goldapi.io)")
     st.divider()
 
@@ -747,3 +754,4 @@ st.markdown("""
   </p>
 </div>
 """, unsafe_allow_html=True)
+
