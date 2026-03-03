@@ -655,14 +655,3 @@ with tab5:
       Zakat calculations may vary by school of thought (madhab).
     </div>
     """, unsafe_allow_html=True)
-```
-
----
-
-### FILE 2 — `requirements.txt`
-```
-streamlit==1.32.0
-requests==2.31.0
-pandas==2.2.0
-
-plotly==5.19.0
