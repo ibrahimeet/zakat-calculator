@@ -21,12 +21,17 @@ st.markdown("""
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
 
-  html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+  /* Force all text visible */
+  html, body, [class*="css"], p, span, div, label {
+    color: #e2e8f0 !important;
+    font-family: 'Inter', sans-serif !important;
+  }
 
-  .main { background-color: #0f172a; }
-  .block-container { padding-top: 1.5rem; }
+  .main, .block-container, [data-testid="stAppViewContainer"] {
+    background-color: #0f172a !important;
+  }
 
-  /* Hero Banner */
+  /* Hero */
   .hero-banner {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     border: 1px solid #334155;
@@ -36,17 +41,12 @@ st.markdown("""
     margin-bottom: 24px;
   }
   .hero-title {
-    font-family: 'Amiri', serif;
+    font-family: 'Amiri', serif !important;
     font-size: 2.8em;
-    color: #f0d060;
+    color: #f0d060 !important;
     margin: 0;
-    text-shadow: 0 0 40px #f0d06040;
   }
-  .hero-subtitle {
-    color: #94a3b8;
-    font-size: 1.05em;
-    margin-top: 8px;
-  }
+  .hero-subtitle { color: #94a3b8 !important; font-size: 1.05em; margin-top: 8px; }
 
   /* Cards */
   .metric-card {
@@ -56,11 +56,11 @@ st.markdown("""
     padding: 18px 20px;
     margin: 6px 0;
   }
-  .metric-label { color: #64748b; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1.5px; }
-  .metric-value { color: #f0d060; font-size: 1.7em; font-weight: 600; margin-top: 4px; }
-  .metric-value.blue  { color: #38bdf8; }
-  .metric-value.green { color: #22c55e; }
-  .metric-value.red   { color: #ef4444; }
+  .metric-label { color: #94a3b8 !important; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1.5px; }
+  .metric-value { color: #f0d060 !important; font-size: 1.7em; font-weight: 600; margin-top: 4px; }
+  .metric-value.blue  { color: #38bdf8 !important; }
+  .metric-value.green { color: #22c55e !important; }
+  .metric-value.red   { color: #ef4444 !important; }
 
   /* Section headers */
   .section-header {
@@ -68,27 +68,42 @@ st.markdown("""
     border-left: 4px solid #f0d060;
     padding: 10px 16px;
     border-radius: 0 8px 8px 0;
-    color: #f0d060;
+    color: #f0d060 !important;
     font-weight: 600;
     font-size: 1.05em;
     margin: 20px 0 12px 0;
   }
 
-  /* Price table */
+  /* Price rows */
   .price-row {
     display: flex;
     justify-content: space-between;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-bottom: 1px solid #1e293b;
     border-radius: 6px;
+    align-items: center;
   }
   .price-row:hover { background: #1e293b; }
-  .price-label { color: #cbd5e1; }
-  .price-val   { color: #f0d060; font-weight: 600; }
+  .price-label { color: #e2e8f0 !important; font-size: 1em; }
+  .price-val   { color: #f0d060 !important; font-weight: 600; font-size: 1em; }
 
-  /* Zakat result box */
+  /* Info boxes */
+  .info-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 10px 0;
+    font-size: 0.9em;
+    line-height: 1.7;
+    color: #cbd5e1 !important;
+  }
+  .info-box strong { color: #f0d060 !important; }
+  .info-box p, .info-box span { color: #cbd5e1 !important; }
+
+  /* Zakat result */
   .zakat-result {
-    background: linear-gradient(135deg, #f0d06015, #f0d06030);
+    background: linear-gradient(135deg, #f0d06010, #f0d06025);
     border: 2px solid #f0d060;
     border-radius: 16px;
     padding: 28px;
@@ -96,47 +111,74 @@ st.markdown("""
     margin: 20px 0;
   }
   .zakat-amount {
-    font-family: 'Amiri', serif;
+    font-family: 'Amiri', serif !important;
     font-size: 3.2em;
-    color: #f0d060;
+    color: #f0d060 !important;
     font-weight: 700;
   }
 
-  /* Status badge */
-  .badge-yes { background:#22c55e20; border:1.5px solid #22c55e; color:#22c55e;
-               padding:8px 20px; border-radius:30px; font-weight:600; display:inline-block; }
-  .badge-no  { background:#ef444420; border:1.5px solid #ef4444; color:#ef4444;
-               padding:8px 20px; border-radius:30px; font-weight:600; display:inline-block; }
-
-  /* Sidebar */
-  [data-testid="stSidebar"] { background: #0f172a; border-right: 1px solid #1e293b; }
-
-  /* Inputs */
-  .stNumberInput > div > div > input { background: #1e293b; color: #e2e8f0; border-color: #334155; }
-  .stSelectbox > div > div { background: #1e293b; color: #e2e8f0; }
-
-  /* Tabs */
-  .stTabs [data-baseweb="tab-list"] { background: #1e293b; border-radius: 10px; gap: 4px; padding: 4px; }
-  .stTabs [data-baseweb="tab"] { color: #64748b; border-radius: 8px; }
-  .stTabs [aria-selected="true"] { background: #f0d06020 !important; color: #f0d060 !important; }
-
-  /* Info box */
-  .info-box {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 10px;
-    padding: 16px;
-    margin: 10px 0;
-    color: #94a3b8;
-    font-size: 0.9em;
-    line-height: 1.6;
+  /* Badges */
+  .badge-yes {
+    background: #22c55e20; border: 1.5px solid #22c55e;
+    color: #22c55e !important; padding: 8px 20px;
+    border-radius: 30px; font-weight: 600; display: inline-block;
+  }
+  .badge-no {
+    background: #ef444420; border: 1.5px solid #ef4444;
+    color: #ef4444 !important; padding: 8px 20px;
+    border-radius: 30px; font-weight: 600; display: inline-block;
   }
 
+  /* Sidebar */
+  [data-testid="stSidebar"] {
+    background: #0f172a !important;
+    border-right: 1px solid #1e293b;
+  }
+  [data-testid="stSidebar"] * { color: #e2e8f0 !important; }
+  [data-testid="stSidebar"] .stRadio label { color: #e2e8f0 !important; }
+  [data-testid="stSidebar"] .stSelectbox label { color: #e2e8f0 !important; }
+
+  /* Inputs */
+  .stNumberInput label { color: #cbd5e1 !important; }
+  .stNumberInput > div > div > input {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+  }
+  .stSelectbox label { color: #cbd5e1 !important; }
+  .stRadio label { color: #cbd5e1 !important; }
+  .stTextInput label { color: #cbd5e1 !important; }
+  input, select, textarea { color: #e2e8f0 !important; }
+
+  /* Tabs */
+  .stTabs [data-baseweb="tab-list"] {
+    background: #1e293b !important;
+    border-radius: 10px; gap: 4px; padding: 4px;
+  }
+  .stTabs [data-baseweb="tab"] { color: #94a3b8 !important; border-radius: 8px; }
+  .stTabs [aria-selected="true"] {
+    background: #f0d06025 !important;
+    color: #f0d060 !important;
+  }
+
+  /* Captions & small text */
+  .stCaption, [data-testid="stCaptionContainer"] { color: #64748b !important; }
+  small { color: #94a3b8 !important; }
+
+  /* Dataframe */
+  [data-testid="stDataFrame"] { color: #e2e8f0 !important; }
+
   /* Divider */
-  hr { border-color: #1e293b; }
+  hr { border-color: #334155 !important; }
+
+  /* Headings */
+  h1, h2, h3, h4 { color: #f0d060 !important; }
+  
+  /* Expander */
+  .streamlit-expanderHeader { color: #e2e8f0 !important; }
+  .streamlit-expanderContent { color: #cbd5e1 !important; background: #1e293b !important; }
 </style>
 """, unsafe_allow_html=True)
-
 
 # ─────────────────────────────────────────
 # LIVE PRICE FETCHER
@@ -655,3 +697,4 @@ with tab5:
       Zakat calculations may vary by school of thought (madhab).
     </div>
     """, unsafe_allow_html=True)
+
