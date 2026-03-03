@@ -166,62 +166,126 @@ st.markdown("""
   small { color: #94a3b8 !important; }
 
   /* Dataframe */
-  [data-testid="stDataFrame"] { color: #e2e8f0 !important; }
+  [data-testid="stDataFrame"] { background: #1e293b !important; }
+  [data-testid="stDataFrame"] * { color: #e2e8f0 !important; }
+  [data-testid="stDataFrameResizable"] {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 10px !important;
+  }
 
   /* Divider */
   hr { border-color: #334155 !important; }
 
   /* Headings */
   h1, h2, h3, h4 { color: #f0d060 !important; }
-  
+
   /* Expander */
   .streamlit-expanderHeader { color: #e2e8f0 !important; }
   .streamlit-expanderContent { color: #cbd5e1 !important; background: #1e293b !important; }
 
   /* Dropdown / Selectbox options */
-  [data-baseweb="select"] * { 
-    background-color: #1e293b !important; 
-    color: #e2e8f0 !important; 
+  [data-baseweb="select"] * {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
   }
-  [data-baseweb="menu"] { 
-    background-color: #1e293b !important; 
+  [data-baseweb="menu"] {
+    background-color: #1e293b !important;
     border: 1px solid #334155 !important;
   }
-  [data-baseweb="option"] { 
-    background-color: #1e293b !important; 
-    color: #e2e8f0 !important; 
-  }
-  [data-baseweb="option"]:hover { 
-    background-color: #f0d06020 !important; 
-    color: #f0d060 !important; 
-  }
-  [data-baseweb="popover"] * { 
-    background-color: #1e293b !important; 
-    color: #e2e8f0 !important; 
-  }
-  /* Selected item in dropdown */
-  [data-baseweb="select"] [data-testid="stMarkdownContainer"] {
-    color: #e2e8f0 !important;
-  }
-  div[role="listbox"] {
-    background-color: #1e293b !important;
-  }
-  div[role="option"] {
+  [data-baseweb="option"] {
     background-color: #1e293b !important;
     color: #e2e8f0 !important;
   }
-  div[role="option"]:hover {
-    background-color: #f0d06030 !important;
+  [data-baseweb="option"]:hover {
+    background-color: #f0d06020 !important;
     color: #f0d060 !important;
   }
-  
+  [data-baseweb="popover"] * {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+  div[role="listbox"] { background-color: #1e293b !important; }
+  div[role="option"] { background-color: #1e293b !important; color: #e2e8f0 !important; }
+  div[role="option"]:hover { background-color: #f0d06030 !important; color: #f0d060 !important; }
+
+  /* Download button */
+  .stDownloadButton button {
+    background: #1e293b !important;
+    color: #f0d060 !important;
+    border: 1.5px solid #f0d060 !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+  }
+  .stDownloadButton button:hover {
+    background: #f0d06020 !important;
+    color: #f0d060 !important;
+  }
+  .stDownloadButton button p { color: #f0d060 !important; }
+
+  /* Table toolbar icons */
+  [data-testid="stDataFrameToolbar"] {
+    background: #1e293b !important;
+    border-radius: 10px !important;
+    border: 1px solid #334155 !important;
+  }
+  [data-testid="stDataFrameToolbar"] button {
+    color: #e2e8f0 !important;
+    background: transparent !important;
+  }
+  [data-testid="stDataFrameToolbar"] button:hover {
+    background: #f0d06020 !important;
+    color: #f0d060 !important;
+  }
+  [data-testid="stDataFrameToolbar"] svg {
+    fill: #e2e8f0 !important;
+    stroke: #e2e8f0 !important;
+  }
+  [data-testid="stDataFrameToolbar"] svg:hover { fill: #f0d060 !important; }
+
 </style>
 """, unsafe_allow_html=True)
+
+
+# ─────────────────────────────────────────
+# VISITOR COUNTER
+# ─────────────────────────────────────────
+@st.cache_data(ttl=60)
+def increment_visitor_count():
+    try:
+        r = requests.get(
+            "https://api.countapi.xyz/hit/zakat-calculator-india/visits",
+            timeout=4
+        )
+        if r.status_code == 200:
+            return r.json().get("value", 0)
+    except:
+        pass
+    return None
+
+@st.cache_data(ttl=60)
+def get_visitor_count():
+    try:
+        r = requests.get(
+            "https://api.countapi.xyz/get/zakat-calculator-india/visits",
+            timeout=4
+        )
+        if r.status_code == 200:
+            return r.json().get("value", 0)
+    except:
+        pass
+    return None
+
+# Count once per session
+if "counted" not in st.session_state:
+    st.session_state.counted = True
+    increment_visitor_count()
+
 
 # ─────────────────────────────────────────
 # LIVE PRICE FETCHER
 # ─────────────────────────────────────────
-@st.cache_data(ttl=3600)  # Cache for 1 hour
+@st.cache_data(ttl=3600)
 def fetch_prices(api_key=""):
     if api_key and api_key != "":
         try:
@@ -237,13 +301,12 @@ def fetch_prices(api_key=""):
                 "gold_18k": round(g24 * 18/24, 2),
                 "gold_14k": round(g24 * 14/24, 2),
                 "silver":   round(sil, 2),
-                "fetched": datetime.now().strftime("%d %b %Y %I:%M %p")
+                "fetched":  datetime.now().strftime("%d %b %Y %I:%M %p")
             }
         except:
             pass
-    # Fallback approximate prices
     return {
-        "source": "🔴 Approximate (add API key for live)",
+        "source": "🔴 Approximate (add API key for live prices)",
         "gold_24k": 7800, "gold_22k": 7150,
         "gold_18k": 5850, "gold_14k": 4550,
         "silver": 95,
@@ -265,8 +328,12 @@ with st.sidebar:
     st.divider()
 
     st.markdown("**🔑 Live Price API Key**")
-    import os
-    api_key = st.secrets.get("GOLD_API_KEY", "")
+    api_key = st.text_input(
+        "goldapi.io API Key (Free)",
+        placeholder="paste-your-free-key-here",
+        type="password",
+        help="Get a free key at goldapi.io — 100 requests/month free"
+    )
     st.caption("💡 [Get free key at goldapi.io](https://www.goldapi.io)")
 
     st.divider()
@@ -277,7 +344,6 @@ with st.sidebar:
         ["Silver (Recommended)", "Gold"],
         help="Silver Nisab is lower and more inclusive. Most contemporary scholars recommend it."
     )
-
     madhab = st.selectbox(
         "School of Thought",
         ["Hanafi", "Shafi'i", "Maliki", "Hanbali"],
@@ -295,13 +361,27 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+    # Visitor counter in sidebar
+    visit_count = get_visitor_count()
+    if visit_count:
+        st.markdown(f"""
+        <div style='background:#1e293b;border:1px solid #334155;border-radius:10px;
+                    padding:14px;text-align:center;margin-top:10px'>
+          <div style='color:#64748b;font-size:0.75em;text-transform:uppercase;letter-spacing:1px'>
+            Total Users
+          </div>
+          <div style='color:#f0d060;font-size:2em;font-weight:700'>{visit_count:,}</div>
+          <div style='color:#64748b;font-size:0.75em'>Muslims calculated Zakat</div>
+        </div>
+        """, unsafe_allow_html=True)
+
 
 # ─────────────────────────────────────────
-# FETCH PRICES
+# FETCH PRICES & NISAB
 # ─────────────────────────────────────────
 prices = fetch_prices(api_key)
-NISAB_GOLD_G   = 87.48
-NISAB_SILVER_G = 612.36
+NISAB_GOLD_G     = 87.48
+NISAB_SILVER_G   = 612.36
 nisab_gold_val   = prices["gold_24k"] * NISAB_GOLD_G
 nisab_silver_val = prices["silver"]   * NISAB_SILVER_G
 
@@ -309,13 +389,26 @@ nisab_silver_val = prices["silver"]   * NISAB_SILVER_G
 # ─────────────────────────────────────────
 # HERO BANNER
 # ─────────────────────────────────────────
+visit_count = get_visitor_count()
+count_html = f"""
+  <div style='margin-top:14px;display:inline-flex;align-items:center;gap:8px;
+              background:#1e293b;border:1px solid #334155;border-radius:30px;
+              padding:6px 18px'>
+    <span style='font-size:1.1em'>🕌</span>
+    <span style='color:#94a3b8;font-size:0.85em'>Used by</span>
+    <span style='color:#f0d060;font-weight:700;font-size:1.1em'>{visit_count:,}</span>
+    <span style='color:#94a3b8;font-size:0.85em'>Muslims so far</span>
+  </div>
+""" if visit_count else ""
+
 st.markdown(f"""
 <div class='hero-banner'>
   <div class='hero-title'>🕌 Zakat Calculator</div>
   <div class='hero-subtitle'>Calculate your annual Zakat with live gold & silver prices in Indian Rupees</div>
-  <div style='margin-top:12px;color:#475569;font-size:0.8em'>
+  <div style='margin-top:10px;color:#475569;font-size:0.8em'>
     Prices: {prices['source']} &nbsp;|&nbsp; {prices['fetched']}
   </div>
+  {count_html}
 </div>
 """, unsafe_allow_html=True)
 
@@ -382,12 +475,12 @@ with tab1:
         """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("### 🧭 Navigate to the tabs above:")
+    st.markdown("### 🧭 Navigate using the tabs above:")
     c1, c2, c3 = st.columns(3)
     with c1:
         st.info("**💰 Metal Prices**\nView today's live gold & silver rates in INR")
     with c2:
-        st.info("**📝 Assets & Liabilities**\nEnter your financial details")
+        st.info("**📝 Assets & Liabilities**\nEnter your financial details here")
     with c3:
         st.info("**📊 Results**\nSee your Zakat amount with charts")
 
@@ -402,15 +495,15 @@ with tab2:
 
     with col1:
         metals_data = [
-            ("🥇 Gold 24K (Pure)", "gold_24k"),
-            ("🥇 Gold 22K (Jewelry)", "gold_22k"),
-            ("🥇 Gold 18K", "gold_18k"),
-            ("🥇 Gold 14K", "gold_14k"),
-            ("🥈 Silver", "silver"),
+            ("🥇 Gold 24K (Pure)",      "gold_24k"),
+            ("🥇 Gold 22K (Jewelry)",   "gold_22k"),
+            ("🥇 Gold 18K",             "gold_18k"),
+            ("🥇 Gold 14K",             "gold_14k"),
+            ("🥈 Silver",               "silver"),
         ]
         for label, key in metals_data:
-            per_g  = prices[key]
-            per_10 = per_g * 10
+            per_g    = prices[key]
+            per_10   = per_g * 10
             per_tola = per_g * 11.66
             st.markdown(f"""
             <div class='price-row'>
@@ -438,9 +531,8 @@ with tab2:
         st.markdown(f"""
         <div class='info-box' style='margin-top:12px'>
           <strong style='color:#f0d060'>💡 About Nisab</strong><br><br>
-          The Silver Nisab (₹{nisab_silver_val:,.0f}) is <em>lower</em> and
-          more widely recommended. Using Gold Nisab (₹{nisab_gold_val:,.0f})
-          is also valid but fewer people would qualify.
+          The Silver Nisab (₹{nisab_silver_val:,.0f}) is lower and more
+          widely recommended. Gold Nisab (₹{nisab_gold_val:,.0f}) is also valid.
         </div>
         """, unsafe_allow_html=True)
 
@@ -466,19 +558,19 @@ with tab3:
     st.markdown("### 📝 Enter Your Assets & Liabilities")
     st.caption("All amounts in Indian Rupees (₹). Enter 0 for items that don't apply.")
 
-    # ── SECTION A: CASH ──────────────────
+    # ── SECTION A: CASH ──
     st.markdown("<div class='section-header'>💰 Section A — Cash & Bank Balances</div>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
-    with c1: cash_home  = st.number_input("Cash at Home (₹)", 0.0, step=500.0, help="Physical currency at home")
-    with c2: savings    = st.number_input("Savings/Current Account (₹)", 0.0, step=1000.0, help="Total across all bank accounts")
-    with c3: fds        = st.number_input("Fixed Deposits (₹)", 0.0, step=1000.0, help="Only FDs maturing within this lunar year")
+    with c1: cash_home = st.number_input("Cash at Home (₹)", 0.0, step=500.0, help="Physical currency at home")
+    with c2: savings   = st.number_input("Savings/Current Account (₹)", 0.0, step=1000.0, help="Total across all bank accounts")
+    with c3: fds       = st.number_input("Fixed Deposits (₹)", 0.0, step=1000.0, help="Only FDs maturing within this lunar year")
     c4, c5 = st.columns(2)
-    with c4: pf         = st.number_input("Provident Fund (₹)", 0.0, step=1000.0, help="Accessible portion — 10% rule will be applied")
-    with c5: forex      = st.number_input("Foreign Currency in ₹", 0.0, step=500.0, help="Convert foreign currency to INR first")
+    with c4: pf    = st.number_input("Provident Fund (₹)", 0.0, step=1000.0, help="Accessible portion — 10% rule will be applied")
+    with c5: forex = st.number_input("Foreign Currency in ₹", 0.0, step=500.0, help="Convert foreign currency to INR first")
 
-    # ── SECTION B: GOLD & SILVER ─────────
+    # ── SECTION B: GOLD & SILVER ──
     st.markdown("<div class='section-header'>🥇 Section B — Gold & Silver (Enter weight in grams)</div>", unsafe_allow_html=True)
-    st.caption("💡 Value is auto-calculated using today's live prices above")
+    st.caption("💡 Value is auto-calculated using today's live prices")
 
     gc1, gc2, gc3, gc4, gc5 = st.columns(5)
     with gc1:
@@ -502,7 +594,7 @@ with tab3:
     else:
         st.markdown("""<div class='info-box'>ℹ️ <strong>Note:</strong> Some scholars exempt normal personal jewelry. Include only what your madhab considers zakatable.</div>""", unsafe_allow_html=True)
 
-    # ── SECTION C: INVESTMENTS ───────────
+    # ── SECTION C: INVESTMENTS ──
     st.markdown("<div class='section-header'>📈 Section C — Investments</div>", unsafe_allow_html=True)
     ic1, ic2, ic3 = st.columns(3)
     with ic1: stocks    = st.number_input("Stocks / Mutual Funds (₹)", 0.0, step=1000.0, help="Current market value")
@@ -512,30 +604,30 @@ with tab3:
     with ic4: bonds     = st.number_input("Bonds / Debentures (₹)", 0.0, step=500.0)
     with ic5: other_inv = st.number_input("Other Investments (₹)", 0.0, step=500.0)
 
-    stocks_method = st.radio(
+    stocks_method    = st.radio(
         "How to calculate Zakat on stocks?",
         ["Full market value (2.5% of total) — Simple", "Zakatable portion only (~30%) — Detailed"],
         horizontal=True
     )
     stocks_zakatable = stocks if "Full" in stocks_method else stocks * 0.30
 
-    # ── SECTION D: BUSINESS ──────────────
+    # ── SECTION D: BUSINESS ──
     st.markdown("<div class='section-header'>🏪 Section D — Business Assets</div>", unsafe_allow_html=True)
     bc1, bc2, bc3 = st.columns(3)
     with bc1: inventory   = st.number_input("Trade Inventory (₹)", 0.0, step=1000.0, help="Value of goods held for sale")
     with bc2: receivables = st.number_input("Money Owed to You (₹)", 0.0, step=500.0, help="Amounts clients/customers owe you")
     with bc3: biz_cash    = st.number_input("Business Cash/Bank (₹)", 0.0, step=1000.0)
 
-    # ── SECTION E: OTHER ─────────────────
+    # ── SECTION E: OTHER ──
     st.markdown("<div class='section-header'>🏠 Section E — Other Zakatable Assets</div>", unsafe_allow_html=True)
-    oc1, oc2, oc3 = st.columns(3)
-    with oc1: rental_sav  = st.number_input("Rental Income Savings (₹)", 0.0, step=500.0)
-    with oc2: agri        = st.number_input("Agricultural Produce (₹)", 0.0, step=500.0)
-    with oc3: other_asset = st.number_input("Other Zakatable Assets (₹)", 0.0, step=500.0)
+    oe1, oe2, oe3 = st.columns(3)
+    with oe1: rental_sav  = st.number_input("Rental Income Savings (₹)", 0.0, step=500.0)
+    with oe2: agri        = st.number_input("Agricultural Produce (₹)", 0.0, step=500.0)
+    with oe3: other_asset = st.number_input("Other Zakatable Assets (₹)", 0.0, step=500.0)
 
     st.divider()
 
-    # ── LIABILITIES ───────────────────────
+    # ── LIABILITIES ──
     st.markdown("<div class='section-header'>📉 Liabilities — Short-Term Debts (Due This Year Only)</div>", unsafe_allow_html=True)
     st.caption("⚠️ Only include debts due within this lunar year. Do NOT include home mortgage or long-term car loans.")
     lc1, lc2, lc3 = st.columns(3)
@@ -543,25 +635,25 @@ with tab3:
     with lc2: credit_card   = st.number_input("Credit Card Balance (₹)", 0.0, step=100.0)
     with lc3: rent_arrears  = st.number_input("Rent Arrears Owed (₹)", 0.0, step=500.0)
     lc4, lc5 = st.columns(2)
-    with lc4: biz_loan      = st.number_input("Business Loan Due (₹)", 0.0, step=500.0)
-    with lc5: other_debt    = st.number_input("Other Short-Term Debts (₹)", 0.0, step=500.0)
+    with lc4: biz_loan  = st.number_input("Business Loan Due (₹)", 0.0, step=500.0)
+    with lc5: other_debt = st.number_input("Other Short-Term Debts (₹)", 0.0, step=500.0)
 
 
 # ══════════════════════════════════════════
-# CALCULATIONS (shared between tabs)
+# SHARED CALCULATIONS
 # ══════════════════════════════════════════
-metals_val      = (g24 * prices["gold_24k"] + g22 * prices["gold_22k"] +
-                   g18 * prices["gold_18k"] + g14 * prices["gold_14k"] +
-                   sil * prices["silver"])
+metals_val    = (g24 * prices["gold_24k"] + g22 * prices["gold_22k"] +
+                 g18 * prices["gold_18k"] + g14 * prices["gold_14k"] +
+                 sil * prices["silver"])
 
-cash_total      = cash_home + savings + fds + pf * 0.10 + forex
-invest_total    = stocks_zakatable + crypto + nsc + bonds + other_inv
-biz_total       = inventory + receivables + biz_cash
-other_total     = rental_sav + agri + other_asset
+cash_total    = cash_home + savings + fds + pf * 0.10 + forex
+invest_total  = stocks_zakatable + crypto + nsc + bonds + other_inv
+biz_total     = inventory + receivables + biz_cash
+other_total   = rental_sav + agri + other_asset
 
-total_assets    = cash_total + metals_val + invest_total + biz_total + other_total
-total_liab      = personal_loan + credit_card + rent_arrears + biz_loan + other_debt
-net_zakatable   = max(0.0, total_assets - total_liab)
+total_assets  = cash_total + metals_val + invest_total + biz_total + other_total
+total_liab    = personal_loan + credit_card + rent_arrears + biz_loan + other_debt
+net_zakatable = max(0.0, total_assets - total_liab)
 
 nisab_threshold = nisab_silver_val if "Silver" in nisab_standard else nisab_gold_val
 nisab_met       = net_zakatable >= nisab_threshold
@@ -574,7 +666,7 @@ zakat_due       = net_zakatable * 0.025 if nisab_met else 0.0
 with tab4:
     st.markdown("### 📊 Your Zakat Results")
 
-    # Top metrics row
+    # Top metric cards
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         st.markdown(f"""<div class='metric-card'>
@@ -597,25 +689,27 @@ with tab4:
           <div class='metric-value'>₹{nisab_threshold:,.0f}</div>
         </div>""", unsafe_allow_html=True)
 
-    # Nisab status
+    # Nisab status badge
     if nisab_met:
-        st.markdown(f"""
+        st.markdown("""
         <div style='text-align:center;margin:20px 0'>
           <span class='badge-yes'>✅ Zakat IS Obligatory — Your wealth exceeds the Nisab</span>
         </div>""", unsafe_allow_html=True)
     else:
+        shortfall = nisab_threshold - net_zakatable
         st.markdown(f"""
         <div style='text-align:center;margin:20px 0'>
-          <span class='badge-no'>❌ Zakat Not Yet Obligatory — Wealth is below Nisab (₹{nisab_threshold - net_zakatable:,.0f} short)</span>
+          <span class='badge-no'>❌ Zakat Not Yet Obligatory — ₹{shortfall:,.0f} below Nisab</span>
         </div>""", unsafe_allow_html=True)
 
     # Zakat due box
     monthly = zakat_due / 12
+    monthly_html = f'<div style="color:#94a3b8;font-size:0.9em;margin-top:8px">Monthly equivalent: ₹{monthly:,.0f}/month</div>' if zakat_due > 0 else ""
     st.markdown(f"""
     <div class='zakat-result'>
       <div style='color:#94a3b8;font-size:0.85em;text-transform:uppercase;letter-spacing:2px'>ZAKAT DUE (2.5%)</div>
       <div class='zakat-amount'>₹{zakat_due:,.0f}</div>
-      {'<div style="color:#94a3b8;font-size:0.9em;margin-top:8px">Monthly equivalent: ₹' + f'{monthly:,.0f}' + '/month</div>' if zakat_due > 0 else ''}
+      {monthly_html}
     </div>
     """, unsafe_allow_html=True)
 
@@ -623,7 +717,6 @@ with tab4:
     chart_col1, chart_col2 = st.columns(2)
 
     with chart_col1:
-        # Donut — Asset Distribution
         cat_labels = ["Cash & Bank", "Gold & Silver", "Investments", "Business", "Other"]
         cat_values = [cash_total, metals_val, invest_total, biz_total, other_total]
         cat_colors = ["#f0d060", "#c0c0c0", "#38bdf8", "#f97316", "#a78bfa"]
@@ -642,8 +735,7 @@ with tab4:
                 paper_bgcolor="#1e293b", plot_bgcolor="#1e293b",
                 font=dict(color="#e2e8f0"),
                 margin=dict(t=40, b=10, l=10, r=10),
-                showlegend=False,
-                height=320
+                showlegend=False, height=320
             )
             fig1.add_annotation(
                 text=f"₹{total_assets/100000:.1f}L<br>Total",
@@ -654,7 +746,6 @@ with tab4:
             st.info("Enter asset values to see the distribution chart.")
 
     with chart_col2:
-        # Bar — Wealth Overview
         fig2 = go.Figure(go.Bar(
             x=["Total Assets", "Liabilities", "Net Zakatable", "Zakat Due"],
             y=[total_assets, total_liab, net_zakatable, zakat_due],
@@ -669,32 +760,65 @@ with tab4:
             font=dict(color="#e2e8f0"),
             yaxis=dict(gridcolor="#334155", tickformat=","),
             margin=dict(t=40, b=10),
-            showlegend=False,
-            height=320
+            showlegend=False, height=320
         )
         st.plotly_chart(fig2, use_container_width=True)
 
-    # Detailed breakdown table
+    # ── Detailed Breakdown Table (Custom HTML — dark themed) ──
     st.markdown("### 📋 Detailed Breakdown")
-    breakdown = {
-        "Category": ["Cash & Bank", "Gold & Silver", "Investments", "Business Assets", "Other Assets",
-                     "— TOTAL ASSETS —", "Liabilities", "— NET ZAKATABLE WEALTH —", "Zakat Due (2.5%)"],
-        "Amount (₹)": [cash_total, metals_val, invest_total, biz_total, other_total,
-                        total_assets, -total_liab, net_zakatable, zakat_due]
-    }
-    df = pd.DataFrame(breakdown)
-    df["Amount (₹)"] = df["Amount (₹)"].apply(lambda x: f"₹{x:,.0f}")
-    st.dataframe(df, use_container_width=True, hide_index=True)
 
-    # Download button
-    csv = pd.DataFrame({
-        "Field": breakdown["Category"],
-        "Amount": [cash_total, metals_val, invest_total, biz_total, other_total,
-                   total_assets, total_liab, net_zakatable, zakat_due]
+    rows_data = [
+        ("💰 Cash & Bank",            cash_total,    "#e2e8f0", False),
+        ("🥇 Gold & Silver",          metals_val,    "#e2e8f0", False),
+        ("📈 Investments",            invest_total,  "#e2e8f0", False),
+        ("🏪 Business Assets",        biz_total,     "#e2e8f0", False),
+        ("🏠 Other Assets",           other_total,   "#e2e8f0", False),
+        ("— TOTAL ASSETS —",          total_assets,  "#f0d060", True),
+        ("📉 Liabilities",            total_liab,    "#ef4444", False),
+        ("— NET ZAKATABLE WEALTH —",  net_zakatable, "#38bdf8", True),
+        ("💚 Zakat Due (2.5%)",       zakat_due,     "#22c55e", True),
+    ]
+
+    rows_html = ""
+    for i, (label, val, color, bold) in enumerate(rows_data):
+        bg     = "#1e293b" if i % 2 == 0 else "#162032"
+        fw     = "700" if bold else "400"
+        prefix = "− " if label == "📉 Liabilities" and val > 0 else ""
+        rows_html += f"""
+        <tr style='background:{bg}'>
+          <td style='padding:12px 16px;color:{color};font-weight:{fw};border-bottom:1px solid #0f172a'>{label}</td>
+          <td style='padding:12px 16px;color:{color};text-align:right;font-weight:{fw};border-bottom:1px solid #0f172a'>{prefix}₹{val:,.0f}</td>
+        </tr>"""
+
+    st.markdown(f"""
+    <table style='width:100%;border-collapse:collapse;border-radius:12px;
+                  overflow:hidden;border:1px solid #334155;margin:10px 0'>
+      <thead>
+        <tr style='background:#0f172a'>
+          <th style='padding:12px 16px;text-align:left;color:#94a3b8;
+                     font-size:0.85em;text-transform:uppercase;letter-spacing:1px;
+                     border-bottom:2px solid #334155'>Category</th>
+          <th style='padding:12px 16px;text-align:right;color:#94a3b8;
+                     font-size:0.85em;text-transform:uppercase;letter-spacing:1px;
+                     border-bottom:2px solid #334155'>Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>{rows_html}</tbody>
+    </table>
+    """, unsafe_allow_html=True)
+
+    # Download CSV
+    csv_data = pd.DataFrame({
+        "Category": ["Cash & Bank", "Gold & Silver", "Investments", "Business Assets",
+                     "Other Assets", "Total Assets", "Liabilities",
+                     "Net Zakatable Wealth", "Zakat Due (2.5%)"],
+        "Amount (INR)": [cash_total, metals_val, invest_total, biz_total, other_total,
+                         total_assets, total_liab, net_zakatable, zakat_due]
     }).to_csv(index=False)
+
     st.download_button(
         "⬇️ Download Results as CSV",
-        csv,
+        csv_data,
         file_name=f"Zakat_Report_{datetime.now().strftime('%Y%m%d')}.csv",
         mime="text/csv"
     )
@@ -724,7 +848,7 @@ with tab5:
     ]
 
     for q, a in faqs:
-        with st.expander(f"❓ {q}"):
+        with st.expander(f"❓  {q}"):
             st.markdown(a)
 
     st.divider()
@@ -735,5 +859,3 @@ with tab5:
       Zakat calculations may vary by school of thought (madhab).
     </div>
     """, unsafe_allow_html=True)
-
-
