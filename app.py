@@ -275,21 +275,23 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     st.divider()
 
-    st.markdown("**🔑 Live Price API Key**")
-    # Auto-read from Streamlit Secrets if available
-    secret_key = st.secrets.get("GOLD_API_KEY", "") if hasattr(st, "secrets") else ""
-    
-    api_key = st.text_input(
-        "goldapi.io API Key (Free)",
-        value=secret_key,          # ← auto-fills from Secrets
-        placeholder="paste-your-free-key-here",
-        type="password",
-        help="Get a free key at goldapi.io — 100 requests/month free"
-    )
-    
-    if secret_key:
-        st.caption("✅ API key loaded from Secrets")
-    st.caption("💡 [Get free key at goldapi.io](https://www.goldapi.io)")
+    # Silently load API key from Streamlit Secrets — never exposed to users
+    try:
+        api_key = st.secrets["GOLD_API_KEY"]
+        st.markdown("""
+        <div style='background:#22c55e15;border:1px solid #22c55e40;
+                    border-radius:8px;padding:8px 12px;margin:8px 0'>
+          <span style='color:#22c55e;font-size:0.8em'>🟢 Live prices active</span>
+        </div>
+        """, unsafe_allow_html=True)
+    except:
+        api_key = ""
+        st.markdown("""
+        <div style='background:#f0d06015;border:1px solid #f0d06040;
+                    border-radius:8px;padding:8px 12px;margin:8px 0'>
+          <span style='color:#f0d060;font-size:0.8em'>🟡 Using approximate prices</span>
+        </div>
+        """, unsafe_allow_html=True)
     st.divider()
 
     st.markdown("**⚙️ Settings**")
@@ -754,4 +756,5 @@ st.markdown("""
   </p>
 </div>
 """, unsafe_allow_html=True)
+
 
