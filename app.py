@@ -243,6 +243,89 @@ st.markdown("""
   }
   [data-testid="stDataFrameToolbar"] svg:hover { fill: #f0d060 !important; }
 
+  /* Number input boxes — dark background */
+  [data-testid="stNumberInput"] input {
+    background-color: #1e293b !important;
+    color: #f0d060 !important;
+    border: 1px solid #334155 !important;
+    border-radius: 8px !important;
+  }
+  [data-testid="stNumberInput"] button {
+    background-color: #334155 !important;
+    color: #e2e8f0 !important;
+    border: none !important;
+  }
+  [data-testid="stNumberInput"] button:hover {
+    background-color: #f0d06030 !important;
+    color: #f0d060 !important;
+  }
+  [data-testid="stNumberInput"] button p {
+    color: #e2e8f0 !important;
+  }
+
+  /* Text input boxes */
+  [data-testid="stTextInput"] input {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    border: 1px solid #334155 !important;
+  }
+
+  /* FAQ Expander — fix arrow icon + header */
+  [data-testid="stExpander"] {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 10px !important;
+    margin-bottom: 8px !important;
+  }
+  [data-testid="stExpander"] summary {
+    color: #f0d060 !important;
+    font-weight: 600 !important;
+    padding: 12px 16px !important;
+  }
+  [data-testid="stExpander"] summary:hover {
+    background: #f0d06010 !important;
+    border-radius: 10px !important;
+  }
+  /* Fix the broken arrow icon */
+  [data-testid="stExpander"] summary svg {
+    fill: #f0d060 !important;
+    color: #f0d060 !important;
+  }
+  details > summary {
+    list-style: none !important;
+  }
+  details > summary::marker,
+  details > summary::-webkit-details-marker {
+    display: none !important;
+    color: transparent !important;
+  }
+  [data-testid="stExpander"] details summary span {
+    color: #f0d060 !important;
+  }
+  /* Expander content */
+  [data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+    background: #1e293b !important;
+    color: #cbd5e1 !important;
+    padding: 0 16px 16px 16px !important;
+    border-radius: 0 0 10px 10px !important;
+  }
+  [data-testid="stExpander"] p {
+    color: #cbd5e1 !important;
+  }
+
+  /* Caption text */
+  [data-testid="stCaptionContainer"] p {
+    color: #64748b !important;
+  }
+
+  /* All labels for inputs */
+  [data-testid="stNumberInput"] label p,
+  [data-testid="stTextInput"] label p,
+  [data-testid="stSelectbox"] label p,
+  [data-testid="stRadio"] label p {
+    color: #cbd5e1 !important;
+  }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -859,3 +942,4 @@ with tab5:
       Zakat calculations may vary by school of thought (madhab).
     </div>
     """, unsafe_allow_html=True)
+
